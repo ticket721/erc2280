@@ -8,16 +8,18 @@
     },
     "dependencies": {
         "@openzeppelin/contracts": "^2.3.0",
-        "@ticket721/e712": "0.1.6",
+        "@ticket721/e712": "0.2.0",
         "ethers": "^4.0.36",
         "truffle": "^5.0.35"
     },
     "devDependencies": {
         "@commitlint/cli": "^7.5.2",
         "@commitlint/config-conventional": "^7.5.0",
+        "@htmlacademy/editorconfig-cli": "^1.0.0",
         "conventional-changelog-cli": "^2.0.12",
         "husky": "^1.3.1",
-        "@htmlacademy/editorconfig-cli": "^1.0.0"
+        "solhint": "^2.3.0",
+        "solidity-coverage": "^0.7.0-beta.2"
     },
     "editorconfig-cli": [
         "package.json",
@@ -26,7 +28,9 @@
         "migrations/**/*.js"
     ],
     "scripts": {
-        "test:truffle": "truffle test",
+        "test:coverage": "truffle run coverage",
+        "test:editorconfig": "editorconfig-cli",
+        "test:lint": "solhint contracts/**/*.sol",
         "test": "npm run test:truffle"
     },
     "repository": {

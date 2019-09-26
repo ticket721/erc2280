@@ -1,4 +1,4 @@
-const {MTKNSigner} = require('@ticket721/e712');
+const {ERC2280Signer} = require('@ticket721/e712');
 const ethers = require('ethers');
 
 // Helper to generate domain
@@ -95,9 +95,10 @@ contract('mTKN', (accounts) => {
         const mTKN_instance = await mTKN.deployed();
 
         const domain_value = domain(mTKN_instance.address);
-        const mTKN_signer = new MTKNSigner(domain_value.name, domain_value.version, domain_value.chainId, domain_value.verifyingContract);
+        const erc2280_signer = new ERC2280Signer(domain_value.name, domain_value.version, domain_value.chainId, domain_value.verifyingContract);
         const wallet = ethers.Wallet.createRandom();
         const to = accounts[0];
+        const gasPrice = 1000000;
 
         // Prepare payload data
         const mTransferPayload = {
@@ -112,13 +113,13 @@ contract('mTKN', (accounts) => {
             txparams: {
                 nonce: parseInt(await mTKN_instance.nonceOf(wallet.address)),
                 gasLimit: 1000000,
-                gasPrice: 1000000,
+                gasPrice,
                 reward: 100000,
             }
         };
 
         // Generate signature with helper
-        const signature = await mTKN_signer.transfer(
+        const signature = await erc2280_signer.transfer(
             mTransferPayload.recipient,
             mTransferPayload.amount,
             mTransferPayload.actors,
@@ -127,7 +128,7 @@ contract('mTKN', (accounts) => {
         );
 
         // Verify signature with helper
-        const verification = await mTKN_signer.verifyTransfer(
+        const verification = await erc2280_signer.verifyTransfer(
             mTransferPayload.recipient,
             mTransferPayload.amount,
             mTransferPayload.actors,
@@ -165,7 +166,7 @@ contract('mTKN', (accounts) => {
             ],
 
             signature.hex
-            , {from: accounts[1]});
+            , {from: accounts[1], gasPrice});
 
         expect(res).to.equal(true);
 
@@ -187,7 +188,7 @@ contract('mTKN', (accounts) => {
             ],
 
             signature.hex
-            , {from: accounts[1]});
+            , {from: accounts[1], gasPrice});
 
         console.log('AFTER signedTransfer META-TRANSACTION');
         await display_state([
@@ -203,9 +204,10 @@ contract('mTKN', (accounts) => {
         const mTKN_instance = await mTKN.deployed();
 
         const domain_value = domain(mTKN_instance.address);
-        const mTKN_signer = new MTKNSigner(domain_value.name, domain_value.version, domain_value.chainId, domain_value.verifyingContract);
+        const erc2280_signer = new ERC2280Signer(domain_value.name, domain_value.version, domain_value.chainId, domain_value.verifyingContract);
         const wallet = ethers.Wallet.createRandom();
         const to = accounts[0];
+        const gasPrice = 1000000;
 
         // Prepare payload data
         const mApprovePayload = {
@@ -220,14 +222,14 @@ contract('mTKN', (accounts) => {
             txparams: {
                 nonce: parseInt(await mTKN_instance.nonceOf(wallet.address)),
                 gasLimit: 1000000,
-                gasPrice: 1000000,
+                gasPrice,
                 reward: 100000,
             }
 
         };
 
         // Generate signature with helper
-        const signature = await mTKN_signer.approve(
+        const signature = await erc2280_signer.approve(
             mApprovePayload.spender,
             mApprovePayload.amount,
             mApprovePayload.actors,
@@ -236,7 +238,7 @@ contract('mTKN', (accounts) => {
         );
 
         // Verify signature with helper
-        const verification = await mTKN_signer.verifyApprove(
+        const verification = await erc2280_signer.verifyApprove(
             mApprovePayload.spender,
             mApprovePayload.amount,
             mApprovePayload.actors,
@@ -274,7 +276,7 @@ contract('mTKN', (accounts) => {
             ],
 
             signature.hex
-            , {from: accounts[1]});
+            , {from: accounts[1], gasPrice});
 
         expect(res).to.equal(true);
 
@@ -296,7 +298,7 @@ contract('mTKN', (accounts) => {
             ],
 
             signature.hex
-            , {from: accounts[1]});
+            , {from: accounts[1], gasPrice});
 
         console.log('AFTER signedApprove META-TRANSACTION');
         await display_state([
@@ -314,11 +316,12 @@ contract('mTKN', (accounts) => {
         const mTKN_instance = await mTKN.deployed();
 
         const domain_value = domain(mTKN_instance.address);
-        const mTKN_signer = new MTKNSigner(domain_value.name, domain_value.version, domain_value.chainId, domain_value.verifyingContract);
+        const erc2280_signer = new ERC2280Signer(domain_value.name, domain_value.version, domain_value.chainId, domain_value.verifyingContract);
         const wallet = ethers.Wallet.createRandom();
         const from = accounts[0];
         const to = accounts[1];
         const signer = wallet.address;
+        const gasPrice = 1000000;
 
         //
         const mTransferFromPayload = {
@@ -334,14 +337,14 @@ contract('mTKN', (accounts) => {
             txparams: {
                 nonce: parseInt(await mTKN_instance.nonceOf(wallet.address)),
                 gasLimit: 1000000,
-                gasPrice: 1000000,
+                gasPrice,
                 reward: 100000,
             }
 
         };
 
         // Generate signature with helper
-        const signature = await mTKN_signer.transferFrom(
+        const signature = await erc2280_signer.transferFrom(
             mTransferFromPayload.sender,
             mTransferFromPayload.recipient,
             mTransferFromPayload.amount,
@@ -351,7 +354,7 @@ contract('mTKN', (accounts) => {
         );
 
         // Verify signature with helper
-        const verification = await mTKN_signer.verifyTransferFrom(
+        const verification = await erc2280_signer.verifyTransferFrom(
             mTransferFromPayload.sender,
             mTransferFromPayload.recipient,
             mTransferFromPayload.amount,
@@ -394,7 +397,7 @@ contract('mTKN', (accounts) => {
             ],
 
             signature.hex
-            , {from: accounts[2]});
+            , {from: accounts[2], gasPrice});
 
         expect(res).to.equal(true);
 
@@ -417,7 +420,7 @@ contract('mTKN', (accounts) => {
             ],
 
             signature.hex
-            , {from: accounts[2]});
+            , {from: accounts[2], gasPrice});
 
         console.log('AFTER signedTransferFrom META-TRANSACTION');
         await display_state([

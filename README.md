@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="https://github.com/ticket721/mTKN/raw/master/assets/logo.png">
+  <img src="https://github.com/ticket721/erc2280/raw/master/assets/logo.png">
 </p>
 
-This repository contains the interface for the `mTKN` standard and the initial EIP Draft content.
+This repository contains the interface for the ERC2280 standard, the initial EIP Draft content and an implementation called `mTKN`.
 
 The discussions about the standards are on [Github](https://github.com/ethereum/EIPs/issues/2281) and on [Ethereum Magicians](https://ethereum-magicians.org/t/eip-2280-erc-20-extension-for-native-meta-transactions-support/3656).
 
@@ -14,7 +14,7 @@ Use ERC-712 signatures to trigger `transfer`, `transferFrom` or `approve` method
 
 ## Motivation
 
-The popularity of meta transactions is rising thanks to actors of the community (Austin Thomas Griffith, the MetaCartel, and many more). ERC-1776 was published in February 2019 by Ronan Sandford to start a standardization process around implementations of native meta transactions as extensions of well-known standards. I introduce today the specification for an ERC-20 (only) extension adding native meta transactions support; the `mTKN` (meta token) standard. This standard should focus on simplicity, and is a major step in the development of standardized relay networks.
+The popularity of meta transactions is rising thanks to actors of the community (Austin Thomas Griffith, the MetaCartel, and many more). ERC-1776 was published in February 2019 by Ronan Sandford to start a standardization process around implementations of native meta transactions as extensions of well-known standards. I introduce today the specification for an ERC-20 (only) extension adding native meta transactions support; the **ERC-2280** standard. This standard should focus on simplicity, and is a major step in the development of standardized relay networks.
 
 ### Goal
 
@@ -145,7 +145,7 @@ This type describe the main type used to trigger a `transferFrom`.
 | `ERC-20::decimals`| 0x313ce567 |
 | `ERC-2280` | 0x6941bcc3 |
 
-### mTKN interface
+### ERC2280 interface
 
 #### `nonceOf`
 
@@ -387,16 +387,16 @@ The `signature` is a `bytes` argument, making it easier to use as most off-chain
 
 #### Specification Interface
 
-The following interface can be found [here](https://github.com/ticket721/mTKN/blob/master/contracts/mTKN.sol).
+The following interface can be found [here](https://github.com/ticket721/erc2280/blob/master/contracts/ERC2280.sol).
 
 ```solidity
 pragma solidity >=0.5.0 <0.6.0;
 
-/// @title ERC-2280 mTKN - ERC-20 native meta transactions
+/// @title ERC-2280: ERC-20 extension for native meta transactions support
 /// @dev See
-interface mTKN {
+interface ERC2280 {
 
-    /// @notice Return the current expected nonce for given `account`.
+    /// @notice Return the current exepected nonce for given `account`.
     ///
     /// @param account Will retrieve the nonce of this address
     ///
@@ -630,7 +630,7 @@ To lower the amount of arguments for the call, we prefer taking the signature as
 
 #### Build the EIP-712 Domain
 
-In order to verify the signatures, the `mTKN` compliant contract should use the following method:
+In order to verify the signatures, the `ERC-2280` compliant contract should use the following method:
 
 - Define the types as structs (`EIP712Domain`, `mActors`, `mTxParams`, `mTransfer`, `mApprove`, `mTransferFrom`).
 - Define a `hash` helper function with parametric polymorphism for each type defined above.
@@ -641,14 +641,14 @@ The EIP712Domain should always have the following values for your implementation
 - `name` should be the same as the one returned by the `name` method from the `ERC20` optional specification.
 - `version` should be defined as you want.
 - `chainId` should be the proper ID of the current chain.
-- `verifyingContract` should be the address of the `mTKN` contract (`address(this)`).
+- `verifyingContract` should be the address of the `ERC-2280 contract (`address(this)`).
 
-This is an example implementation of the `mTKNDomain`, that can also be found [here](https://github.com/ticket721/mTKN/blob/master/contracts/mTKNDomain.sol).
+This is an example implementation of the `ERC2280Domain`, that can also be found [here](https://github.com/ticket721/erc2280/blob/master/contracts/ERC2280Domain.sol).
 
 ```solidity
 pragma solidity >=0.5.0 <0.6.0;
 
-contract mTKNDomain {
+contract ERC2280Domain {
 
     struct Signature {
         uint8 v;
@@ -832,6 +832,7 @@ contract mTKNDomain {
     }
 
 }
+
 ```
 
 ### Off-Chain
@@ -840,18 +841,18 @@ contract mTKNDomain {
 
 The [`@ticket721/e712`](https://www.npmjs.com/package/@ticket721/e712) npm module can be used to properly generate signatures to make the calls. 
 
-Complete usage examples of `signedTransfer`, `signedApprove`, `signedTransferFrom`, `verifyTransfer`, `verifyApprove` and `verifyTransferFrom` can be found in the [example implementation tests](https://github.com/ticket721/mTKN/blob/master/test/mtkn.js).
+Complete usage examples of `signedTransfer`, `signedApprove`, `signedTransferFrom`, `verifyTransfer`, `verifyApprove` and `verifyTransferFrom` can be found in the [example implementation tests](https://github.com/ticket721/erc2280/blob/master/test/mtkn.js).
 
-The module exposes a helper class, `MTKNSigner`. Build it with your domain arguments and quickly generate signatures with your private key, or payloads for your web3 browser. You can also verify proofs.
- 
-##### Example: generate signature with private key available (Typescript)
+The module exposes a helper class, `ERC2280Signer`. Build it with your domain arguments and quickly generate signatures with your private key, or payloads for your web3 browser. You can also verify proofs.
+
+##### Example: with private key available
 
 ```typescript
-import { MTKNSigner, EIP712Signature }    from '@ticket721/e712';
+import { ERC2280Signer, EIP712Signature }    from '@ticket721/e712';
 import { Wallet }                         from 'ethers';
 import { BN }                             from 'bn.js';
 
-const domain_name = 'my mtkn';
+const domain_name = 'my ERC2280';
 const domain_version = '1';
 const domain_chain_id = 1;
 const domain_contract = '0xd0a21D06befee2C5851EbafbcB1131d35B135e87';
@@ -861,13 +862,13 @@ const address_zero = '0x0000000000000000000000000000000000000000';
 
 
 // Build helper class
-const mtkn = new MTKNSigner(domain_name, domain_version, domain_chain_id, domain_contract);
+const ERC2280 = new ERC2280Signer(domain_name, domain_version, domain_chain_id, domain_contract);
 
 // Use your own private keys
 const wallet = Wallet.createRandom();
 
 // Generate proof
-const sig: EIP712Signature = await mtkn.transfer(transfer_recipient, new BN(1000), {
+const sig: EIP712Signature = await ERC2280.transfer(transfer_recipient, new BN(1000), {
     signer: wallet.address,
     relayer: address_zero
 }, {
@@ -878,7 +879,7 @@ const sig: EIP712Signature = await mtkn.transfer(transfer_recipient, new BN(1000
 }, wallet.privateKey) as EIP712Signature;
 
 // Verify proofs
-const verification = await mtkn.verifyTransfer(transfer_recipient, new BN(1000), {
+const verification = await ERC2280.verifyTransfer(transfer_recipient, new BN(1000), {
     signer: wallet.address,
     relayer: address_zero
 }, {
@@ -890,13 +891,13 @@ const verification = await mtkn.verifyTransfer(transfer_recipient, new BN(1000),
 
 ```
 
-##### Example: generate signature with web3 browser (Typescript)
+##### Example: sign with web3 browser
 
 ```typescript
-import { MTKNSigner, EIP712Payload }    from '@ticket721/e712';
-import { BN }                           from 'bn.js';
+import { ERC2280Signer, EIP712Payload }    from '@ticket721/e712';
+import { BN }                             from 'bn.js';
 
-const domain_name = 'my mtkn';
+const domain_name = 'my ERC2280';
 const domain_version = '1';
 const domain_chain_id = 1;
 const domain_contract = '0xd0a21D06befee2C5851EbafbcB1131d35B135e87';
@@ -907,10 +908,10 @@ const address_zero = '0x0000000000000000000000000000000000000000';
 const my_web3_browser_address = '0x19C8239E04ceA1B1C0342E6da5cF3a5Ca54874e1';
 
 // Build helper class
-const mtkn = new MTKNSigner(domain_name, domain_version, domain_chain_id, domain_contract);
+const ERC2280 = new ERC2280Signer(domain_name, domain_version, domain_chain_id, domain_contract);
 
 // Generate ready-to-sign payload
-const payload: EIP712Payload = await mtkn.transfer(transfer_recipient, new BN(1000), {
+const payload: EIP712Payload = await ERC2280.transfer(transfer_recipient, new BN(1000), {
     signer: my_web3_browser_address,
     relayer: address_zero
 }, {
@@ -936,7 +937,7 @@ web3.currentProvider.sendAsync({
 
 ### Implementations
 
-- Working example implementation [here](https://github.com/ticket721/mTKN/blob/master/contracts/mTKNExample.sol) with tests [here](https://github.com/ticket721/mTKN/blob/master/test/mtkn.js).
+- Working example implementation [here](https://github.com/ticket721/erc2280/blob/master/contracts/mTKN.sol) with tests [here](https://github.com/ticket721/erc2280/blob/master/test/mtkn.js).
 
 ### History
 
@@ -948,7 +949,7 @@ web3.currentProvider.sendAsync({
 
 ### Discussion
 
-My goal is to make a specification that can get broadly adopted in order to start working on relay networks for `mTKN`s. There is no point in developing these relays if I'm the only one agreeing with this spec. So please, help this standard come to life by giving your point of view, ideas and remarks [here](https://github.com/ethereum/EIPs/issues/2281).
+My goal is to make a specification that can get broadly adopted in order to start working on relay networks for `ERC2280` implementations. There is no point in developing these relays if I'm the only one agreeing with this spec. So please, help this standard come to life by giving your point of view, ideas and remarks [here](https://github.com/ethereum/EIPs/issues/2281).
 
 ### Copyright
 

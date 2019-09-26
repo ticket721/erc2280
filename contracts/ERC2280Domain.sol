@@ -1,6 +1,6 @@
 pragma solidity >=0.5.0 <0.6.0;
 
-contract mTKNDomain {
+contract ERC2280Domain {
 
     struct Signature {
         uint8 v;
@@ -68,14 +68,17 @@ contract mTKNDomain {
     );
 
     bytes32 constant MTRANSFER_TYPEHASH = keccak256(
+    // solhint-disable-next-line max-line-length
         "mTransfer(address recipient,uint256 amount,mActors actors,mTxParams txparams)mActors(address signer,address relayer)mTxParams(uint256 nonce,uint256 gasLimit,uint256 gasPrice,uint256 reward)"
     );
 
     bytes32 constant MAPPROVE_TYPEHASH = keccak256(
+    // solhint-disable-next-line max-line-length
         "mApprove(address spender,uint256 amount,mActors actors,mTxParams txparams)mActors(address signer,address relayer)mTxParams(uint256 nonce,uint256 gasLimit,uint256 gasPrice,uint256 reward)"
     );
 
     bytes32 constant MTRANSFERFROM_TYPEHASH = keccak256(
+    // solhint-disable-next-line max-line-length
         "mTransferFrom(address sender,address recipient,uint256 amount,mActors actors,mTxParams txparams)mActors(address signer,address relayer)mTxParams(uint256 nonce,uint256 gasLimit,uint256 gasPrice,uint256 reward)"
     );
 

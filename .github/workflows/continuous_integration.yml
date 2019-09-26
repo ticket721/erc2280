@@ -15,5 +15,12 @@ jobs:
                   node-version: 12.x
             - name: Install dependencies
               run: npm install
+
+            - name: Run Editorconfig checks
+              run: npm run test:editorconfig
+
+            - name: Run SolHint checks
+              run: npm run test:lint
+
             - name: Run Truffle test suite
-              run: npm run test:truffle
+              run: npm run test:coverage
