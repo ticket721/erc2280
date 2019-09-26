@@ -1,5 +1,5 @@
-const mTKNExample = artifacts.require("mTKNExample");
+const mTKN = artifacts.require("mTKN");
 
 module.exports = function(deployer) {
-    deployer.deploy(mTKNExample, "test meta token", "mTKNE", 18);
+    deployer.deploy(mTKN, "test meta token", "mTKNE", 18);
 };

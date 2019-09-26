@@ -150,7 +150,7 @@ This type describe the main type used to trigger a `transferFrom`.
 #### `nonceOf`
 
 ```solidity
-    function nonceOf(address account) public view returns (uint256);
+    function nonceOf(address account) external view returns (uint256);
 ```
 
 ##### Notes
@@ -165,16 +165,28 @@ Return the current expected nonce for given `account`.
 
 ```solidity
     function verifyTransfer(
-        address recipient, uint256 amount,
-        address[2] memory actors, uint256[4] memory txparams, bytes memory signature
-    ) public view returns (bool);
+        address[3] calldata actors, uint256[5] calldata txparams, bytes calldata signature
+    ) external view returns (bool);
 ```
 
 ##### Notes
 
-`actors` is an array of `address`es that MUST contain `signer` as `actors[0]` and `relayer` as `actors[1]`.
+- `signer` is the address signing the meta transaction (`actors[0]`)
+- `relayer` is the address posting the meta transaction to the contract (`actors[1]`)
+- `recipient` is the address receiving the token transfer (`actors[2]`)
 
-`txparams` is an array of `uint256` that MUST contain `nonce` as `txparams[0]`, `gasLimit` as `txparams[1]`, `gasPrice` as `txparams[2]` and `reward` as `txparams[3]`.
+
+- `nonce` is the meta transaction count on this specific token for `signer` (`txparams[0]`)
+- `gasLimit` is the wanted gas limit, set by `signer`, should be respected by `relayer` (`txparams[1]`)
+- `gasPrice` is the wanted gas price, set by `signer`, should be respected by `relayer` (`txparams[2]`)
+- `reward` is the amount of tokens that are given to `relayer` from `signer` (`txparams[3]`)
+- `amount` is the amount of tokens transferred from `signer` to `recipient` (`txparams[4]`)
+
+##### Arguments
+
+- `actors` Array of `address`es that contains `signer` as `actors[0]`, `relayer` as `actors[1]`, `recipient` as `actors[2]` in this precise order.
+
+- `txparams` Array of `uint256` that MUST contain `nonce` as `txparams[0]`, `gasLimit` as `txparams[1]`, `gasPrice` as `txparams[2]`, `reward` as `txparams[3]` and `amount` as `txparams[4]`.
 
 ##### Main Mechanism
 
@@ -198,16 +210,29 @@ Verifies that a transfer to `recipient` from `signer` of `amount` tokens is poss
 
 ```solidity
     function signedTransfer(
-        address recipient, uint256 amount,
-        address[2] memory actors, uint256[4] memory txparams, bytes memory signature
-    ) public returns (bool);
+        address[3] calldata actors, uint256[5] calldata txparams, bytes calldata signature
+    ) external returns (bool);
 ```
 
 ##### Notes
 
-`actors` is an array of `address`es that MUST contain `signer` as `actors[0]` and `relayer` as `actors[1]`.
+- `signer` is the address signing the meta transaction (`actors[0]`)
+- `relayer` is the address posting the meta transaction to the contract (`actors[1]`)
+- `recipient` is the address receiving the token transfer (`actors[2]`)
 
-`txparams` is an array of `uint256` that MUST contain `nonce` as `txparams[0]`, `gasLimit` as `txparams[1]`, `gasPrice` as `txparams[2]` and `reward` as `txparams[3]`.
+
+- `nonce` is the meta transaction count on this specific token for `signer` (`txparams[0]`)
+- `gasLimit` is the wanted gas limit, set by `signer`, should be respected by `relayer` (`txparams[1]`)
+- `gasPrice` is the wanted gas price, set by `signer`, should be respected by `relayer` (`txparams[2]`)
+- `reward` is the amount of tokens that are given to `relayer` from `signer` (`txparams[3]`)
+- `amount` is the amount of tokens transferred from `signer` to `recipient` (`txparams[4]`)
+
+
+##### Arguments
+
+- `actors` Array of `address`es that contains `signer` as `actors[0]`, `relayer` as `actors[1]`, `recipient` as `actors[2]` in this precise order.
+
+- `txparams` Array of `uint256` that MUST contain `nonce` as `txparams[0]`, `gasLimit` as `txparams[1]`, `gasPrice` as `txparams[2]`, `reward` as `txparams[3]` and `amount` as `txparams[4]`.
 
 ##### Main Mechanism
 
@@ -232,16 +257,29 @@ Transfers `amount` amount of tokens from `signer`'s balance to address `recipien
 
 ```solidity
     function verifyApprove(
-        address spender, uint256 amount,
-        address[2] memory actors, uint256[4] memory txparams, bytes memory signature
-    ) public view returns (bool);
+        address[3] calldata actors, uint256[5] calldata txparams, bytes calldata signature
+    ) external view returns (bool);
 ```
+
 
 ##### Notes
 
-`actors` is an array of `address`es that MUST contain `signer` as `actors[0]` and `relayer` as `actors[1]`.
+- `signer` is the address signing the meta transaction (`actors[0]`)
+- `relayer` is the address posting the meta transaction to the contract (`actors[1]`)
+- `spender` is the address being approved by `signer` (`actors[2]`)
 
-`txparams` is an array of `uint256` that MUST contain `nonce` as `txparams[0]`, `gasLimit` as `txparams[1]`, `gasPrice` as `txparams[2]` and `reward` as `txparams[3]`.
+
+- `nonce` is the meta transaction count on this specific token for `signer` (`txparams[0]`)
+- `gasLimit` is the wanted gas limit, set by `signer`, should be respected by `relayer` (`txparams[1]`)
+- `gasPrice` is the wanted gas price, set by `signer`, should be respected by `relayer` (`txparams[2]`)
+- `reward` is the amount of tokens that are given to `relayer` from `signer` (`txparams[3]`)
+- `amount` is the amount of tokens approved by `signer` to `spender` (`txparams[4]`)
+
+##### Arguments
+
+- `actors` Array of `address`es that contains `signer` as `actors[0]`, `relayer` as `actors[1]`, `spender` as `actors[2]` in this precise order.
+- `txparams` Array of `uint256` that MUST contain `nonce` as `txparams[0]`, `gasLimit` as `txparams[1]`, `gasPrice` as `txparams[2]`, `reward` as `txparams[3]` and `amount` as `txparams[4]`.
+
 ##### Main Mechanism
 
 Verifies that an approval for `spender` of `amount` tokens on `signer`'s balance is possible with the provided signature and with current contract state.
@@ -264,16 +302,27 @@ Verifies that an approval for `spender` of `amount` tokens on `signer`'s balance
 
 ```solidity
     function signedApprove(
-        address spender, uint256 amount,
-        address[2] memory actors, uint256[4] memory txparams, bytes memory signature
-    ) public returns (bool);
+        address[3] calldata actors, uint256[5] calldata txparams, bytes calldata signature
+    ) external returns (bool);
 ```
 
 ##### Notes
 
-`actors` is an array of `address`es that MUST contain `signer` as `actors[0]` and `relayer` as `actors[1]`.
+- `signer` is the address signing the meta transaction (`actors[0]`)
+- `relayer` is the address posting the meta transaction to the contract (`actors[1]`)
+- `spender` is the address being approved by `signer` (`actors[2]`)
 
-`txparams` is an array of `uint256` that MUST contain `nonce` as `txparams[0]`, `gasLimit` as `txparams[1]`, `gasPrice` as `txparams[2]` and `reward` as `txparams[3]`.
+
+- `nonce` is the meta transaction count on this specific token for `signer` (`txparams[0]`)
+- `gasLimit` is the wanted gas limit, set by `signer`, should be respected by `relayer` (`txparams[1]`)
+- `gasPrice` is the wanted gas price, set by `signer`, should be respected by `relayer` (`txparams[2]`)
+- `reward` is the amount of tokens that are given to `relayer` from `signer` (`txparams[3]`)
+- `amount` is the amount of tokens approved by `signer` to `spender` (`txparams[4]`)
+
+##### Arguments
+
+- `actors` Array of `address`es that contains `signer` as `actors[0]`, `relayer` as `actors[1]`, `spender` as `actors[2]` in this precise order.
+- `txparams` Array of `uint256` that MUST contain `nonce` as `txparams[0]`, `gasLimit` as `txparams[1]`, `gasPrice` as `txparams[2]`, `reward` as `txparams[3]` and `amount` as `txparams[4]`.
 
 ##### Main Mechanism
 
@@ -297,16 +346,28 @@ Approves `amount` amount of tokens from `signer`'s balance to address `spender`,
 
 ```solidity
     function verifyTransferFrom(
-        address sender, address recipient, uint256 amount,
-        address[2] memory actors, uint256[4] memory txparams, bytes memory signature
-    ) public view returns (bool);
+        address[4] calldata actors, uint256[5] calldata txparams, bytes calldata signature
+    ) external view returns (bool);
 ```
 
 ##### Notes
 
-`actors` is an array of `address`es that MUST contain `signer` as `actors[0]` and `relayer` as `actors[1]`.
+- `signer` is the address signing the meta transaction (`actors[0]`)
+- `relayer` is the address posting the meta transaction to the contract (`actors[1]`)
+- `sender` is the account sending the tokens, and should have approved `signer` (`actors[2]`)
+- `recipient` is the account receiving the tokens (`actors[3]`)
 
-`txparams` is an array of `uint256` that MUST contain `nonce` as `txparams[0]`, `gasLimit` as `txparams[1]`, `gasPrice` as `txparams[2]` and `reward` as `txparams[3]`.
+
+- `nonce` is the meta transaction count on this specific token for `signer` (`txparams[0]`)
+- `gasLimit` is the wanted gas limit, set by `signer`, should be respected by `relayer` (`txparams[1]`)
+- `gasPrice` is the wanted gas price, set by `signer`, should be respected by `relayer` (`txparams[2]`)
+- `reward` is the amount of tokens that are given to `relayer` from `signer` (`txparams[3]`)
+- `amount` is the amount of tokens transferred from `sender` to `recipient` (`txparams[4]`)
+
+##### Arguments
+
+- `actors` Array of `address`es that contains `signer` as `actors[0]` and `relayer` as `actors[1]`, `sender` as `actors[2]` and `recipient` as `actors[3]`
+- `txparams` Array of `uint256` that MUST contain `nonce` as `txparams[0]`, `gasLimit` as `txparams[1]`, `gasPrice` as `txparams[2]`, `reward` as `txparams[3]` and `amount` as `txparams[4]`.
 
 ##### Main Mechanism
 
@@ -332,18 +393,30 @@ Verifies that a transfer from `sender` to `recipient` of `amount` tokens and tha
 
 ```solidity
     function signedTransferFrom(
-        address sender, address recipient, uint256 amount,
-        address[2] memory actors, uint256[4] memory txparams, bytes memory signature
-    ) public returns (bool);
+        address[4] calldata actors, uint256[5] calldata txparams, bytes calldata signature
+    ) external returns (bool);
     
 }
 ```
 
 ##### Notes
 
-`actors` is an array of `address`es that MUST contain `signer` as `actors[0]` and `relayer` as `actors[1]`.
+- `signer` is the address signing the meta transaction (`actors[0]`)
+- `relayer` is the address posting the meta transaction to the contract (`actors[1]`)
+- `sender` is the account sending the tokens, and should have approved `signer` (`actors[2]`)
+- `recipient` is the account receiving the tokens (`actors[3]`)
 
-`txparams` is an array of `uint256` that MUST contain `nonce` as `txparams[0]`, `gasLimit` as `txparams[1]`, `gasPrice` as `txparams[2]` and `reward` as `txparams[3]`.
+
+- `nonce` is the meta transaction count on this specific token for `signer` (`txparams[0]`)
+- `gasLimit` is the wanted gas limit, set by `signer`, should be respected by `relayer` (`txparams[1]`)
+- `gasPrice` is the wanted gas price, set by `signer`, should be respected by `relayer` (`txparams[2]`)
+- `reward` is the amount of tokens that are given to `relayer` from `signer` (`txparams[3]`)
+- `amount` is the amount of tokens transferred from `sender` to `recipient` (`txparams[4]`)
+
+##### Arguments
+
+- `actors` Array of `address`es that contains `signer` as `actors[0]` and `relayer` as `actors[1]`, `sender` as `actors[2]` and `recipient` as `actors[3]`
+- `txparams` Array of `uint256` that MUST contain `nonce` as `txparams[0]`, `gasLimit` as `txparams[1]`, `gasPrice` as `txparams[2]`, `reward` as `txparams[3]` and `amount` as `txparams[4]`.
 
 ##### Main Mechanism
 
@@ -371,11 +444,11 @@ The specification was designed with simplicity in mind, and respect to current t
 
 1. `nonceOf` is the newcomer. This constant method is required to give a nonce to the signers and prevent replay attacks.
 
-2. `verifyTransfer` and `signedTransfer` accept two arguments like the initial `transfer` method, plus the `actors`, `txparams` and `signature` required for the meta transaction.
+2. `verifyTransfer` and `signedTransfer` accept `recipient` in the `actors` argument and `amount` in the `txparams` argument.
 
-2. `verifyApprove` and `signedApprove` accept two arguments like the initial `approve` method, plus the `actors`, `txparams` and `signature` required for the meta transaction.
+2. `verifyApprove` and `signedApprove` accept `spender` in the `actors` argument and `amount` in the `txparams` argument.
 
-2. `verifyTransferFrom` and `signedTransferFrom` accept three arguments like the initial `transferFrom` method, plus the `actors`, `txparams` and `signature` required for the meta transaction.
+2. `verifyTransferFrom` and `signedTransferFrom` accept `sender` and `recipient` in the `actors` argument and `amount` in the `txparams` argument.
 
 The `mActors` and `mTxParams` type have been introduced to factorize arguments in two logical types. Multiple meta-transactions could get packed into the arrays in that way.
 
@@ -393,16 +466,13 @@ The following interface can be found [here](https://github.com/ticket721/erc2280
 pragma solidity >=0.5.0 <0.6.0;
 
 /// @title ERC-2280: ERC-20 extension for native meta transactions support
-/// @dev See
 interface ERC2280 {
 
-    /// @notice Return the current exepected nonce for given `account`.
-    ///
-    /// @param account Will retrieve the nonce of this address
+    /// @notice Return the current expected nonce for given `account`.
     ///
     /// @return The current nonce for `account`
     ///
-    function nonceOf(address account) public view returns (uint256);
+    function nonceOf(address account) external view returns (uint256);
 
     /// @notice Verifies that a transfer to `recipient` from `signer` of `amount` tokens
     ///         is possible with the provided signature and with current contract state.
@@ -426,14 +496,23 @@ interface ERC2280 {
     /// @dev The function SHOULD throw if the `signer`’s account balance does not have enough
     ///      tokens to spend on transfer and on reward (`balanceOf(signer) >= amount + reward`).
     ///
-    /// @param recipient Target address of the transfer
-    /// @param amount Amount of token to transfer from `signer`'s balance to `recipient`'s balance
-    /// @param actors Array of `address`es that contains `signer` as `actors[0]` and `relayer` as `actors[1]` in this
-    ///               precise order.
-    /// @param txparams Array of `uint256` that MUST contain `nonce` as `txparams[0]`, `gasLimit` as `txparams[1]`,
-    ///                 `gasPrice` as `txparams[2]` and `reward` as `txparams[3]` in this precise order.
+    /// @dev `signer` is the address signing the meta transaction (`actors[0]`)
+    /// @dev `relayer` is the address posting the meta transaction to the contract (`actors[1]`)
+    /// @dev `recipient` is the address receiving the token transfer (`actors[2]`)
+    /// @dev `nonce` is the meta transaction count on this specific token for `signer` (`txparams[0]`)
+    /// @dev `gasLimit` is the wanted gas limit, set by `signer`, should be respected by `relayer` (`txparams[1]`)
+    /// @dev `gasPrice` is the wanted gas price, set by `signer`, should be respected by `relayer` (`txparams[2]`)
+    /// @dev `reward` is the amount of tokens that are given to `relayer` from `signer` (`txparams[3]`)
+    /// @dev `amount` is the amount of tokens transferred from `signer` to `recipient` (`txparams[4]`)
     ///
-    function verifyTransfer(address recipient, uint256 amount, address[2] memory actors, uint256[4] memory txparams, bytes memory signature) external view returns (bool);
+    /// @param actors Array of `address`es that contains `signer` as `actors[0]`, `relayer` as `actors[1]`,
+    ///               `recipient` as `actors[2]` in this precise order.
+    ///
+    /// @param txparams Array of `uint256` that MUST contain `nonce` as `txparams[0]`, `gasLimit` as `txparams[1]`,
+    ///                 `gasPrice` as `txparams[2]`, `reward` as `txparams[3]` and `amount` as `txparams[4]`.
+    ///
+    // solhint-disable-next-line max-line-length
+    function verifyTransfer(address[3] calldata actors, uint256[5] calldata txparams, bytes calldata signature) external view returns (bool);
 
     /// @notice Transfers `amount` amount of tokens to address `recipient`, and fires the Transfer event.
     ///
@@ -456,14 +535,23 @@ interface ERC2280 {
     /// @dev The function SHOULD throw if the `signer`’s account balance does not have enough
     ///      tokens to spend on transfer and on reward (`balanceOf(signer) >= amount + reward`).
     ///
-    /// @param recipient Target address of the transfer
-    /// @param amount Amount of token to transfer from `signer`'s balance to `recipient`'s balance
-    /// @param actors Array of `address`es that contains `signer` as `actors[0]` and `relayer` as `actors[1]` in this
-    ///               precise order.
-    /// @param txparams Array of `uint256` that MUST contain `nonce` as `txparams[0]`, `gasLimit` as `txparams[1]`,
-    ///                 `gasPrice` as `txparams[2]` and `reward` as `txparams[3]` in this precise order.
+    /// @dev `signer` is the address signing the meta transaction (`actors[0]`)
+    /// @dev `relayer` is the address posting the meta transaction to the contract (`actors[1]`)
+    /// @dev `recipient` is the address receiving the token transfer (`actors[2]`)
+    /// @dev `nonce` is the meta transaction count on this specific token for `signer` (`txparams[0]`)
+    /// @dev `gasLimit` is the wanted gas limit, set by `signer`, should be respected by `relayer` (`txparams[1]`)
+    /// @dev `gasPrice` is the wanted gas price, set by `signer`, should be respected by `relayer` (`txparams[2]`)
+    /// @dev `reward` is the amount of tokens that are given to `relayer` from `signer` (`txparams[3]`)
+    /// @dev `amount` is the amount of tokens transferred from `signer` to `recipient` (`txparams[4]`)
     ///
-    function signedTransfer(address recipient, uint256 amount, address[2] memory actors, uint256[4] memory txparams, bytes memory signature) public returns (bool);
+    /// @param actors Array of `address`es that contains `signer` as `actors[0]`, `relayer` as `actors[1]`,
+    ///               `recipient` as `actors[2]` in this precise order.
+    ///
+    /// @param txparams Array of `uint256` that MUST contain `nonce` as `txparams[0]`, `gasLimit` as `txparams[1]`,
+    ///                 `gasPrice` as `txparams[2]`, `reward` as `txparams[3]` and `amount` as `txparams[4]`.
+    ///
+    // solhint-disable-next-line max-line-length
+    function signedTransfer(address[3] calldata actors, uint256[5] calldata txparams, bytes calldata signature) external returns (bool);
 
     /// @notice Verifies that an approval for `spender` of `amount` tokens on
     ///         `signer`'s balance is possible with the provided signature and with current contract state.
@@ -487,14 +575,23 @@ interface ERC2280 {
     /// @dev The function SHOULD throw if the `signer`’s account balance does not have enough tokens
     ///      to spend on allowance and on reward (`balanceOf(signer) >= amount + reward`).
     ///
-    /// @param spender Target address of the approval
-    /// @param amount Amount of token to approve from `signer`'s balance to `recipient`'s account
-    /// @param actors Array of `address`es that contains `signer` as `actors[0]` and `relayer` as `actors[1]` in this
-    ///               precise order.
-    /// @param txparams Array of `uint256` that MUST contain `nonce` as `txparams[0]`, `gasLimit` as `txparams[1]`,
-    ///                 `gasPrice` as `txparams[2]` and `reward` as `txparams[3]` in this precise order.
+    /// @dev `signer` is the address signing the meta transaction (`actors[0]`)
+    /// @dev `relayer` is the address posting the meta transaction to the contract (`actors[1]`)
+    /// @dev `spender` is the address being approved by `signer` (`actors[2]`)
+    /// @dev `nonce` is the meta transaction count on this specific token for `signer` (`txparams[0]`)
+    /// @dev `gasLimit` is the wanted gas limit, set by `signer`, should be respected by `relayer` (`txparams[1]`)
+    /// @dev `gasPrice` is the wanted gas price, set by `signer`, should be respected by `relayer` (`txparams[2]`)
+    /// @dev `reward` is the amount of tokens that are given to `relayer` from `signer` (`txparams[3]`)
+    /// @dev `amount` is the amount of tokens approved by `signer` to `spender` (`txparams[4]`)
     ///
-    function verifyApprove(address spender, uint256 amount, address[2] memory actors, uint256[4] memory txparams, bytes memory signature) public view returns (bool);
+    /// @param actors Array of `address`es that contains `signer` as `actors[0]`, `relayer` as `actors[1]`,
+    ///               `spender` as `actors[2]` in this precise order.
+    ///
+    /// @param txparams Array of `uint256` that MUST contain `nonce` as `txparams[0]`, `gasLimit` as `txparams[1]`,
+    ///                 `gasPrice` as `txparams[2]`, `reward` as `txparams[3]` and `amount` as `txparams[4]`.
+    ///
+    // solhint-disable-next-line max-line-length
+    function verifyApprove(address[3] calldata actors, uint256[5] calldata txparams, bytes calldata signature) external view returns (bool);
 
     /// @notice Approves `amount` amount of tokens from `signer`'s balance to address `spender`, and
     ///         MUST fire the Approve event.
@@ -518,14 +615,23 @@ interface ERC2280 {
     /// @dev The function SHOULD throw if the `signer`’s account balance does not have enough tokens
     ///      to spend on allowance and on reward (`balanceOf(signer) >= amount + reward`).
     ///
-    /// @param spender Target address of the approval
-    /// @param amount Amount of token to approve from `signer`'s balance to `recipient`'s account
-    /// @param actors Array of `address`es that contains `signer` as `actors[0]` and `relayer` as `actors[1]` in this
-    ///               precise order.
-    /// @param txparams Array of `uint256` that MUST contain `nonce` as `txparams[0]`, `gasLimit` as `txparams[1]`,
-    ///                 `gasPrice` as `txparams[2]` and `reward` as `txparams[3]` in this precise order.
+    /// @dev `signer` is the address signing the meta transaction (`actors[0]`)
+    /// @dev `relayer` is the address posting the meta transaction to the contract (`actors[1]`)
+    /// @dev `spender` is the address being approved by `signer` (`actors[2]`)
+    /// @dev `nonce` is the meta transaction count on this specific token for `signer` (`txparams[0]`)
+    /// @dev `gasLimit` is the wanted gas limit, set by `signer`, should be respected by `relayer` (`txparams[1]`)
+    /// @dev `gasPrice` is the wanted gas price, set by `signer`, should be respected by `relayer` (`txparams[2]`)
+    /// @dev `reward` is the amount of tokens that are given to `relayer` from `signer` (`txparams[3]`)
+    /// @dev `amount` is the amount of tokens approved by `signer` to `spender` (`txparams[4]`)
     ///
-    function signedApprove(address spender, uint256 amount, address[2] memory actors, uint256[4] memory txparams, bytes memory signature) public returns (bool);
+    /// @param actors Array of `address`es that contains `signer` as `actors[0]`, `relayer` as `actors[1]`,
+    ///               `spender` as `actors[2]` in this precise order.
+    ///
+    /// @param txparams Array of `uint256` that MUST contain `nonce` as `txparams[0]`, `gasLimit` as `txparams[1]`,
+    ///                 `gasPrice` as `txparams[2]`, `reward` as `txparams[3]` and `amount` as `txparams[4]`.
+    ///
+    // solhint-disable-next-line max-line-length
+    function signedApprove(address[3] calldata actors, uint256[5] calldata txparams, bytes calldata signature) external returns (bool);
 
     /// @notice Verifies that a transfer from `sender` to `recipient` of `amount` tokens and that
     ///         `signer` has at least `amount` allowance from `sender` is possible with the
@@ -553,16 +659,23 @@ interface ERC2280 {
     /// @dev The function SHOULD throw if the `signer`’s account allowance from `sender` is at least `amount`
     ///      (`allowance(sender, signer) >= amount`).
     ///
-    /// @param sender Account that is send tokens
-    /// @param recipient Account that is receiving the tokens
-    /// @param amount Amount of token to transfer from `sender` to `recipient`. `signer` should have at least
-    ///               least `amount` allowance from `sender`.
-    /// @param actors Array of `address`es that contains `signer` as `actors[0]` and `relayer` as `actors[1]` in this
-    ///               precise order.
-    /// @param txparams Array of `uint256` that MUST contain `nonce` as `txparams[0]`, `gasLimit` as `txparams[1]`,
-    ///                 `gasPrice` as `txparams[2]` and `reward` as `txparams[3]` in this precise order.
+    /// @dev `signer` is the address signing the meta transaction (`actors[0]`)
+    /// @dev `relayer` is the address posting the meta transaction to the contract (`actors[1]`)
+    /// @dev `sender` is the account sending the tokens, and should have approved `signer` (`actors[2]`)
+    /// @dev `recipient` is the account receiving the tokens (`actors[3]`)
+    /// @dev `nonce` is the meta transaction count on this specific token for `signer` (`txparams[0]`)
+    /// @dev `gasLimit` is the wanted gas limit, set by `signer`, should be respected by `relayer` (`txparams[1]`)
+    /// @dev `gasPrice` is the wanted gas price, set by `signer`, should be respected by `relayer` (`txparams[2]`)
+    /// @dev `reward` is the amount of tokens that are given to `relayer` from `signer` (`txparams[3]`)
+    /// @dev `amount` is the amount of tokens transferred from `sender` to `recipient` (`txparams[4]`)
     ///
-    function verifyTransferFrom(address sender, address recipient, uint256 amount, address[2] memory actors, uint256[4] memory txparams, bytes memory signature) public view returns (bool);
+    /// @param actors Array of `address`es that contains `signer` as `actors[0]` and `relayer` as `actors[1]`, `sender`
+    ///               as `actors[2]` and `recipient` as `actors[3]`
+    /// @param txparams Array of `uint256` that MUST contain `nonce` as `txparams[0]`, `gasLimit` as `txparams[1]`,
+    ///                 `gasPrice` as `txparams[2]`, `reward` as `txparams[3]` and `amount` as `txparams[4]`.
+    ///
+    // solhint-disable-next-line max-line-length
+    function verifyTransferFrom(address[4] calldata actors, uint256[5] calldata txparams, bytes calldata signature) external view returns (bool);
 
     /// @notice Triggers transfer from `sender` to `recipient` of `amount` tokens. `signer`
     ///         MUST have at least `amount` allowance from `sender`.
@@ -590,18 +703,26 @@ interface ERC2280 {
     /// @dev The function SHOULD throw if the `signer`’s account allowance from `sender` is at least `amount`
     ///      (`allowance(sender, signer) >= amount`).
     ///
-    /// @param sender Account that is send tokens
-    /// @param recipient Account that is receiving the tokens
-    /// @param amount Amount of token to transfer from `sender` to `recipient`. `signer` should have at least
-    ///               least `amount` allowance from `sender`.
-    /// @param actors Array of `address`es that contains `signer` as `actors[0]` and `relayer` as `actors[1]` in this
-    ///               precise order.
-    /// @param txparams Array of `uint256` that MUST contain `nonce` as `txparams[0]`, `gasLimit` as `txparams[1]`,
-    ///                 `gasPrice` as `txparams[2]` and `reward` as `txparams[3]` in this precise order.
+    /// @dev `signer` is the address signing the meta transaction (`actors[0]`)
+    /// @dev `relayer` is the address posting the meta transaction to the contract (`actors[1]`)
+    /// @dev `sender` is the account sending the tokens, and should have approved `signer` (`actors[2]`)
+    /// @dev `recipient` is the account receiving the tokens (`actors[3]`)
+    /// @dev `nonce` is the meta transaction count on this specific token for `signer` (`txparams[0]`)
+    /// @dev `gasLimit` is the wanted gas limit, set by `signer`, should be respected by `relayer` (`txparams[1]`)
+    /// @dev `gasPrice` is the wanted gas price, set by `signer`, should be respected by `relayer` (`txparams[2]`)
+    /// @dev `reward` is the amount of tokens that are given to `relayer` from `signer` (`txparams[3]`)
+    /// @dev `amount` is the amount of tokens transferred from `sender` to `recipient` (`txparams[4]`)
     ///
-    function signedTransferFrom(address sender, address recipient, uint256 amount, address[2] memory actors, uint256[4] memory txparams, bytes memory signature) public returns (bool);
+    /// @param actors Array of `address`es that contains `signer` as `actors[0]` and `relayer` as `actors[1]`, `sender`
+    ///               as `actors[2]` and `recipient` as `actors[3]`
+    /// @param txparams Array of `uint256` that MUST contain `nonce` as `txparams[0]`, `gasLimit` as `txparams[1]`,
+    ///                 `gasPrice` as `txparams[2]`, `reward` as `txparams[3]` and `amount` as `txparams[4]`.
+    ///
+    // solhint-disable-next-line max-line-length
+    function signedTransferFrom(address[4] calldata actors, uint256[5] calldata txparams, bytes calldata signature) external returns (bool);
 
 }
+
 ```
 
 #### Splitting bytes signature into `r`, `s` & `v`

@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/introspection/ERC165.sol";
 import "./ERC2280.sol";
 import "./ERC2280Domain.sol";
 
-contract mTKNExample is ERC2280, ERC20, ERC20Detailed, ERC2280Domain, ERC165 {
+contract mTKN is ERC2280, ERC20, ERC20Detailed, ERC2280Domain, ERC165 {
 
     mapping (address => uint256) private nonces;
 
@@ -30,8 +30,12 @@ contract mTKNExample is ERC2280, ERC20, ERC20Detailed, ERC2280Domain, ERC165 {
         _registerInterface(0x313ce567); // ERC-20::decimals
     }
 
-    function _splitSignature(bytes memory signature) private pure returns (uint8 v, bytes32 r, bytes32 s) {
+    function _splitSignature(bytes memory signature) private pure returns (Signature memory sig) {
         require(signature.length == 65, "Invalid signature length");
+
+        bytes32 r;
+        bytes32 s;
+        uint8 v;
 
         assembly {
             r := mload(add(signature, 32))
@@ -44,6 +48,11 @@ contract mTKNExample is ERC2280, ERC20, ERC20Detailed, ERC2280Domain, ERC165 {
         }
 
         require(v == 27 || v == 28, "Invalid v argument");
+        return Signature({
+            v: v,
+            r: r,
+            s: s
+            });
     }
 
     modifier gasBarrier(uint256 gas_left, uint256 expected_gas, uint256 expected_gasPrice) {
@@ -80,19 +89,18 @@ contract mTKNExample is ERC2280, ERC20, ERC20Detailed, ERC2280Domain, ERC165 {
     }
 
     function verifyTransfer(
-        address recipient, uint256 amount,
-        address[2] memory actors, uint256[4] memory txparams, bytes memory signature
+        address[3] calldata actors, uint256[5] calldata txparams, bytes calldata signature
     )
     nonceBarrier(actors[0], txparams[0])
     relayerBarrier(actors[1])
     gasBarrier(gasleft(), txparams[1], txparams[2])
-    public view returns (bool) {
+    external view returns (bool) {
 
         {
             mTransfer memory mtransfer = mTransfer({
 
-                recipient: recipient,
-                amount: amount,
+                recipient: actors[2],
+                amount: txparams[4],
 
                 actors: mActors({
                     signer: actors[0],
@@ -108,42 +116,31 @@ contract mTKNExample is ERC2280, ERC20, ERC20Detailed, ERC2280Domain, ERC165 {
 
                 });
 
-            bytes32 r;
-            bytes32 s;
-            uint8 v;
-
-            (v,r,s) = _splitSignature(signature);
-
-            Signature memory sig = Signature({v: v, r: r, s: s});
+            Signature memory sig = _splitSignature(signature);
 
             require(verify(mtransfer, sig), "Invalid signer");
         }
 
-        require(balanceOf(actors[0]) >= amount + txparams[3], "Signer has not enough funds for transfer + reward");
+        require(balanceOf(actors[0]) >= txparams[4] + txparams[3], "Signer has not enough funds for transfer + reward");
 
         return true;
 
     }
 
     function signedTransfer(
-        address recipient, uint256 amount,
-        address[2] memory actors, uint256[4] memory txparams, bytes memory signature
-    ) public returns (bool) {
+        address[3] calldata actors, uint256[5] calldata txparams, bytes calldata signature
+    ) external returns (bool) {
 
         uint256 gas_left_approximation = gasleft();
 
-        bytes32 r;
-        bytes32 s;
-        uint8 v;
-
-        (v,r,s) = _splitSignature(signature);
+        Signature memory sig = _splitSignature(signature);
 
         _signedTransfer(
 
             mTransfer({
 
-            recipient: recipient,
-            amount: amount,
+            recipient: actors[2],
+            amount: txparams[4],
 
             actors: mActors({
                 signer: actors[0],
@@ -160,7 +157,7 @@ contract mTKNExample is ERC2280, ERC20, ERC20Detailed, ERC2280Domain, ERC165 {
 
             }),
 
-            Signature({v: v, r: r, s: s}),
+            sig,
 
             gas_left_approximation
 
@@ -183,19 +180,18 @@ contract mTKNExample is ERC2280, ERC20, ERC20Detailed, ERC2280Domain, ERC165 {
     }
 
     function verifyApprove(
-        address spender, uint256 amount,
-        address[2] memory actors, uint256[4] memory txparams, bytes memory signature
+        address[3] calldata actors, uint256[5] calldata txparams, bytes calldata signature
     )
     nonceBarrier(actors[0], txparams[0])
     relayerBarrier(actors[1])
     gasBarrier(gasleft(), txparams[1], txparams[2])
-    public view returns (bool) {
+    external view returns (bool) {
 
         {
             mApprove memory mapprove = mApprove({
 
-                spender: spender,
-                amount: amount,
+                spender: actors[2],
+                amount: txparams[4],
 
                 actors: mActors({
                     signer: actors[0],
@@ -211,42 +207,31 @@ contract mTKNExample is ERC2280, ERC20, ERC20Detailed, ERC2280Domain, ERC165 {
 
                 });
 
-            bytes32 r;
-            bytes32 s;
-            uint8 v;
-
-            (v,r,s) = _splitSignature(signature);
-
-            Signature memory sig = Signature({v: v, r: r, s: s});
+            Signature memory sig = _splitSignature(signature);
 
             require(verify(mapprove, sig), "Invalid signer");
         }
 
-        require(balanceOf(actors[0]) >= amount + txparams[3], "Signer has not enough funds for approval + reward");
+        require(balanceOf(actors[0]) >= txparams[4] + txparams[3], "Signer has not enough funds for approval + reward");
 
         return true;
 
     }
 
     function signedApprove(
-        address spender, uint256 amount,
-        address[2] memory actors, uint256[4] memory txparams, bytes memory signature
-    ) public returns (bool) {
+        address[3] calldata actors, uint256[5] calldata txparams, bytes calldata signature
+    ) external returns (bool) {
 
         uint256 gas_left_approximation = gasleft();
 
-        bytes32 r;
-        bytes32 s;
-        uint8 v;
-
-        (v,r,s) = _splitSignature(signature);
+        Signature memory sig = _splitSignature(signature);
 
         _signedApprove(
 
             mApprove({
 
-            spender: spender,
-            amount: amount,
+            spender: actors[2],
+            amount: txparams[4],
 
             actors: mActors({
                 signer: actors[0],
@@ -262,7 +247,7 @@ contract mTKNExample is ERC2280, ERC20, ERC20Detailed, ERC2280Domain, ERC165 {
 
             }),
 
-            Signature({v: v, r: r, s: s}),
+            sig,
 
             gas_left_approximation
 
@@ -287,72 +272,56 @@ contract mTKNExample is ERC2280, ERC20, ERC20Detailed, ERC2280Domain, ERC165 {
     }
 
     function verifyTransferFrom(
-        address sender, address recipient, uint256 amount,
-        address[2] memory actors, uint256[4] memory txparams, bytes memory signature
+        address[4] calldata actors, uint256[5] calldata txparams, bytes calldata signature
     )
     nonceBarrier(actors[0], txparams[0])
     relayerBarrier(actors[1])
     gasBarrier(gasleft(), txparams[1], txparams[2])
-    public view returns (bool) {
+    external view returns (bool) {
 
-        {
-            mTransferFrom memory mtransfer_from = mTransferFrom({
+        mTransferFrom memory mtransfer_from = mTransferFrom({
 
-                sender: sender,
-                recipient: recipient,
-                amount: amount,
+            sender: actors[2],
+            recipient: actors[3],
+            amount: txparams[4],
 
-                actors: mActors({
-                    signer: actors[0],
-                    relayer: actors[1]
-                    }),
+            actors: mActors({
+                signer: actors[0],
+                relayer: actors[1]
+                }),
 
-                txparams: mTxParams({
-                    nonce: txparams[0],
-                    gasLimit: txparams[1],
-                    gasPrice: txparams[2],
-                    reward: txparams[3]
-                    })
+            txparams: mTxParams({
+                nonce: txparams[0],
+                gasLimit: txparams[1],
+                gasPrice: txparams[2],
+                reward: txparams[3]
+                })
 
-                });
+            });
 
-            bytes32 r;
-            bytes32 s;
-            uint8 v;
+        require(verify(mtransfer_from, _splitSignature(signature)), "Invalid signer");
 
-            (v,r,s) = _splitSignature(signature);
-
-            Signature memory sig = Signature({v: v, r: r, s: s});
-
-            require(verify(mtransfer_from, sig), "Invalid signer");
-        }
-
-        require(balanceOf(sender) >= amount, "Sender has not enough funds for transfer");
+        require(balanceOf(actors[2]) >= txparams[4], "Sender has not enough funds for transfer");
         require(balanceOf(actors[0]) >= txparams[3], "Signer has not enough funds for reward");
 
         return true;
     }
 
     function signedTransferFrom(
-        address sender, address recipient, uint256 amount,
-        address[2] memory actors, uint256[4] memory txparams, bytes memory signature
-    ) public returns (bool) {
+        address[4] calldata actors, uint256[5] calldata txparams, bytes calldata signature
+    ) external returns (bool) {
 
         uint256 gas_left_approximation = gasleft();
 
-        bytes32 r;
-        bytes32 s;
-        uint8 v;
-
-        (v,r,s) = _splitSignature(signature);
+        Signature memory sig = _splitSignature(signature);
 
         _signedTransferFrom(
 
             mTransferFrom({
 
-            sender: sender,
-            recipient: recipient,
-            amount: amount,
+            sender: actors[2],
+            recipient: actors[3],
+            amount: txparams[4],
 
             actors: mActors({
                 signer: actors[0],
@@ -368,7 +337,7 @@ contract mTKNExample is ERC2280, ERC20, ERC20Detailed, ERC2280Domain, ERC165 {
 
             }),
 
-            Signature({v: v, r: r, s: s}),
+            sig,
 
             gas_left_approximation
 
@@ -377,7 +346,7 @@ contract mTKNExample is ERC2280, ERC20, ERC20Detailed, ERC2280Domain, ERC165 {
         return true;
     }
 
-    function nonceOf(address account) public view returns (uint256) {
+    function nonceOf(address account) external view returns (uint256) {
         return nonces[account];
     }
 

@@ -78,7 +78,7 @@ contract('mTKN', (accounts) => {
     });
 
     it('supportsInterface 0x6941bcc3 (mTKN) & 0x01ffc9a7 (ERC-165) & 0x36372b07 (ERC-20) & 0x06fdde03 (ERC-20::name) & 0x95d89b41 (ERC-20::symbol) & 0x313ce567 (ERC-20::decimals)', async () => {
-        const mTKN = artifacts.require('mTKNExample');
+        const mTKN = artifacts.require('mTKN');
         const mTKN_instance = await mTKN.deployed();
 
         expect(await mTKN_instance.supportsInterface('0x6941bcc3')).to.equal(true);
@@ -91,7 +91,7 @@ contract('mTKN', (accounts) => {
     });
 
     it('mTransfer', async () => {
-        const mTKN = artifacts.require('mTKNExample');
+        const mTKN = artifacts.require('mTKN');
         const mTKN_instance = await mTKN.deployed();
 
         const domain_value = domain(mTKN_instance.address);
@@ -150,12 +150,11 @@ contract('mTKN', (accounts) => {
 
         // Execute Constant verifier
         const res = await mTKN_instance.verifyTransfer(
-            mTransferPayload.recipient,
-            mTransferPayload.amount,
 
             [
                 mTransferPayload.actors.signer,
                 mTransferPayload.actors.relayer,
+                mTransferPayload.recipient,
             ],
 
             [
@@ -163,21 +162,22 @@ contract('mTKN', (accounts) => {
                 mTransferPayload.txparams.gasLimit,
                 mTransferPayload.txparams.gasPrice,
                 mTransferPayload.txparams.reward,
+                mTransferPayload.amount
             ],
 
             signature.hex
+
             , {from: accounts[1], gasPrice});
 
         expect(res).to.equal(true);
 
         // Execute Meta Transaction
         await mTKN_instance.signedTransfer(
-            mTransferPayload.recipient,
-            mTransferPayload.amount,
 
             [
                 mTransferPayload.actors.signer,
                 mTransferPayload.actors.relayer,
+                mTransferPayload.recipient,
             ],
 
             [
@@ -185,6 +185,7 @@ contract('mTKN', (accounts) => {
                 mTransferPayload.txparams.gasLimit,
                 mTransferPayload.txparams.gasPrice,
                 mTransferPayload.txparams.reward,
+                mTransferPayload.amount,
             ],
 
             signature.hex
@@ -200,7 +201,7 @@ contract('mTKN', (accounts) => {
     });
 
     it('mApprove', async () => {
-        const mTKN = artifacts.require('mTKNExample');
+        const mTKN = artifacts.require('mTKN');
         const mTKN_instance = await mTKN.deployed();
 
         const domain_value = domain(mTKN_instance.address);
@@ -260,19 +261,19 @@ contract('mTKN', (accounts) => {
 
         // Execute Constant verifier
         const res = await mTKN_instance.verifyApprove(
-            mApprovePayload.spender,
-            mApprovePayload.amount,
 
             [
                 mApprovePayload.actors.signer,
-                mApprovePayload.actors.relayer
+                mApprovePayload.actors.relayer,
+                mApprovePayload.spender
             ],
 
             [
                 mApprovePayload.txparams.nonce,
                 mApprovePayload.txparams.gasLimit,
                 mApprovePayload.txparams.gasPrice,
-                mApprovePayload.txparams.reward
+                mApprovePayload.txparams.reward,
+                mApprovePayload.amount
             ],
 
             signature.hex
@@ -282,19 +283,19 @@ contract('mTKN', (accounts) => {
 
         // Execute Meta Transaction
         await mTKN_instance.signedApprove(
-            mApprovePayload.spender,
-            mApprovePayload.amount,
 
             [
                 mApprovePayload.actors.signer,
-                mApprovePayload.actors.relayer
+                mApprovePayload.actors.relayer,
+                mApprovePayload.spender
             ],
 
             [
                 mApprovePayload.txparams.nonce,
                 mApprovePayload.txparams.gasLimit,
                 mApprovePayload.txparams.gasPrice,
-                mApprovePayload.txparams.reward
+                mApprovePayload.txparams.reward,
+                mApprovePayload.amount
             ],
 
             signature.hex
@@ -312,7 +313,7 @@ contract('mTKN', (accounts) => {
     it('mTransferFrom', async () => {
 
         // 1. Build the Contract to recover informations and send meta-transactions
-        const mTKN = artifacts.require('mTKNExample');
+        const mTKN = artifacts.require('mTKN');
         const mTKN_instance = await mTKN.deployed();
 
         const domain_value = domain(mTKN_instance.address);
@@ -380,20 +381,20 @@ contract('mTKN', (accounts) => {
 
         // Execute Constant verifier
         const res = await mTKN_instance.verifyTransferFrom(
-            mTransferFromPayload.sender,
-            mTransferFromPayload.recipient,
-            mTransferFromPayload.amount,
 
             [
                 mTransferFromPayload.actors.signer,
-                mTransferFromPayload.actors.relayer
+                mTransferFromPayload.actors.relayer,
+                mTransferFromPayload.sender,
+                mTransferFromPayload.recipient,
             ],
 
             [
                 mTransferFromPayload.txparams.nonce,
                 mTransferFromPayload.txparams.gasLimit,
                 mTransferFromPayload.txparams.gasPrice,
-                mTransferFromPayload.txparams.reward
+                mTransferFromPayload.txparams.reward,
+                mTransferFromPayload.amount,
             ],
 
             signature.hex
@@ -403,20 +404,20 @@ contract('mTKN', (accounts) => {
 
         // Execute Meta Transaction
         await mTKN_instance.signedTransferFrom(
-            mTransferFromPayload.sender,
-            mTransferFromPayload.recipient,
-            mTransferFromPayload.amount,
 
             [
                 mTransferFromPayload.actors.signer,
-                mTransferFromPayload.actors.relayer
+                mTransferFromPayload.actors.relayer,
+                mTransferFromPayload.sender,
+                mTransferFromPayload.recipient
             ],
 
             [
                 mTransferFromPayload.txparams.nonce,
                 mTransferFromPayload.txparams.gasLimit,
                 mTransferFromPayload.txparams.gasPrice,
-                mTransferFromPayload.txparams.reward
+                mTransferFromPayload.txparams.reward,
+                mTransferFromPayload.amount
             ],
 
             signature.hex
