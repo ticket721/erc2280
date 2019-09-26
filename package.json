@@ -37,7 +37,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/ticket721/mTKN.git"
+        "url": "git+https://github.com/ticket721/erc2280.git"
     },
     "keywords": [
         "erc20"
@@ -45,9 +45,9 @@
     "author": "Iulian Rotaru",
     "license": "MIT",
     "bugs": {
-        "url": "https://github.com/ticket721/mTKN/issues"
+        "url": "https://github.com/ticket721/erc2280/issues"
     },
-    "homepage": "https://github.com/ticket721/mTKN#readme",
+    "homepage": "https://github.com/ticket721/erc2280#readme",
     "husky": {
         "hooks": {
             "pre-commit": "editorconfig-cli",
