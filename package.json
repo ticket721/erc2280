@@ -1,6 +1,6 @@
 {
     "name": "erc2280",
-    "version": "1.1.0",
+    "version": "1.2.0",
     "description": "ERC2280 - erc-20 extension for native meta transaction support",
     "main": "truffle-config.js",
     "directories": {

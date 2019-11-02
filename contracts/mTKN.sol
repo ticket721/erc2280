@@ -10,17 +10,17 @@ contract mTKN is IERC2280, ERC20, ERC20Detailed, ERC2280Domain, ERC165 {
 
     mapping (address => uint256) private nonces;
 
-    bytes4 constant public MTKN_ERC165_SIGNATURE = 0x6941bcc3;
-    /// bytes4(keccak256('nonceOf(address)')) ^
-    /// bytes4(keccak256('verifyTransfer(address,uint256,address[2],uint256[4],bytes)')) ^
-    /// bytes4(keccak256('signedTransfer(address,uint256,address[2],uint256[4],bytes)')) ^
-    /// bytes4(keccak256('verifyApprove(address,uint256,address[2],uint256[4],bytes)')) ^
-    /// bytes4(keccak256('signedApprove(address,uint256,address[2],uint256[4],bytes)')) ^
-    /// bytes4(keccak256('verifyTransferFrom(address,address,uint256,address[2],uint256[4],bytes)')) ^
-    /// bytes4(keccak256('signedTransferFrom(address,address,uint256,address[2],uint256[4],bytes)')) == 0x6941bcc3;
+    bytes4 constant public MTKN_ERC165_SIGNATURE = // 0x25961920
+    bytes4(keccak256('nonceOf(address)')) ^
+    bytes4(keccak256('verifyTransfer(address[3],uint256[5],bytes)')) ^
+    bytes4(keccak256('signedTransfer(address[3],uint256[5],bytes)')) ^
+    bytes4(keccak256('verifyApprove(address[3],uint256[5],bytes)')) ^
+    bytes4(keccak256('signedApprove(address[3],uint256[5],bytes)')) ^
+    bytes4(keccak256('verifyTransferFrom(address[4],uint256[5],bytes)')) ^
+    bytes4(keccak256('signedTransferFrom(address[4],uint256[5],bytes)'));
 
     constructor (string memory name, string memory symbol, uint8 decimals) ERC20Detailed(name, symbol, decimals)
-    ERC2280Domain(name)
+    ERC2280Domain(name, "1", 1)
     ERC165()
     public {
         _registerInterface(MTKN_ERC165_SIGNATURE);

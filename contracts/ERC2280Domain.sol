@@ -84,11 +84,11 @@ contract ERC2280Domain {
 
     bytes32 DOMAIN_SEPARATOR;
 
-    constructor (string memory domain_name) public {
+    constructor (string memory domain_name, string memory version, uint256 chainId) public {
         DOMAIN_SEPARATOR = hash(EIP712Domain({
             name: domain_name,
-            version: '1',
-            chainId: 1,
+            version: version,
+            chainId: chainId,
             verifyingContract: address(this)
             }));
     }

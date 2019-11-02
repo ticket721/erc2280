@@ -77,11 +77,11 @@ contract('mTKN', (accounts) => {
         this.snap_id = await snapshot();
     });
 
-    it('supportsInterface 0x6941bcc3 (mTKN) & 0x01ffc9a7 (ERC-165) & 0x36372b07 (ERC-20) & 0x06fdde03 (ERC-20::name) & 0x95d89b41 (ERC-20::symbol) & 0x313ce567 (ERC-20::decimals)', async () => {
+    it('supportsInterface 0x25961920 (mTKN) & 0x01ffc9a7 (ERC-165) & 0x36372b07 (ERC-20) & 0x06fdde03 (ERC-20::name) & 0x95d89b41 (ERC-20::symbol) & 0x313ce567 (ERC-20::decimals)', async () => {
         const mTKN = artifacts.require('mTKN');
         const mTKN_instance = await mTKN.deployed();
 
-        expect(await mTKN_instance.supportsInterface('0x6941bcc3')).to.equal(true);
+        expect(await mTKN_instance.supportsInterface('0x25961920')).to.equal(true);
         expect(await mTKN_instance.supportsInterface('0x01ffc9a7')).to.equal(true);
         expect(await mTKN_instance.supportsInterface('0x36372b07')).to.equal(true);
         expect(await mTKN_instance.supportsInterface('0x06fdde03')).to.equal(true);
