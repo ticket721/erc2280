@@ -14,7 +14,7 @@
     },
     "devDependencies": {
         "@commitlint/cli": "^8.2.0",
-        "@commitlint/config-conventional": "^7.5.0",
+        "@commitlint/config-conventional": "^8.2.0",
         "@htmlacademy/editorconfig-cli": "^1.0.0",
         "conventional-changelog-cli": "^2.0.12",
         "husky": "^3.1.0",
