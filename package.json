@@ -8,7 +8,7 @@
     },
     "dependencies": {
         "@openzeppelin/contracts": "2.3.0",
-        "@ticket721/e712": "0.2.2",
+        "@ticket721/e712": "0.2.4",
         "ethers": "4.0.41",
         "truffle": "5.1.5"
     },
