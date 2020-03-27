@@ -5648,10 +5648,10 @@ trim-off-newlines@^1.0.0:
   resolved "https://registry.yarnpkg.com/trim-off-newlines/-/trim-off-newlines-1.0.1.tgz#9f9ba9d9efa8764c387698bcbfeb2c848f11adb3"
   integrity sha1-n5up2e+odkw4dpi8v+sshI8RrbM=
 
-truffle@5.1.6:
-  version "5.1.6"
-  resolved "https://registry.yarnpkg.com/truffle/-/truffle-5.1.6.tgz#cafb5fb9266434b46501fb0b761b4de8f88f817b"
-  integrity sha512-blTpn76f/XC0MFcSGrlJJLEZgV+q5LCSeXzS5R2fzSHWuSuv+I4Zg5dAdIHd4XDqxfLLEMKA7bBcEIAklxKw7w==
+truffle@5.1.19:
+  version "5.1.19"
+  resolved "https://registry.yarnpkg.com/truffle/-/truffle-5.1.19.tgz#daf0aca071b9e2cdd88f456f10c1a81e840794aa"
+  integrity sha512-H4S7GbKCN56eW5ftLo+l160c+SLyF8C205hUF9VRfulxFBdXvmTIeHdRO/zcnBWiKfEbXzuHWSI9gyFkPtkvmw==
   dependencies:
     app-module-path "^2.2.0"
     mocha "5.2.0"
