@@ -20,7 +20,7 @@
         "husky": "^3.1.0",
         "solhint": "^2.3.0",
         "coveralls": "^3.0.6",
-        "solidity-coverage": "0.7.0-beta.3"
+        "solidity-coverage": "0.7.9"
     },
     "editorconfig-cli": [
         "package.json",
