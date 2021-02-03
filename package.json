@@ -9,7 +9,7 @@
     "dependencies": {
         "@openzeppelin/contracts": "2.3.0",
         "@ticket721/e712": "0.2.4",
-        "ethers": "4.0.41",
+        "ethers": "5.0.28",
         "truffle": "5.1.6"
     },
     "devDependencies": {
