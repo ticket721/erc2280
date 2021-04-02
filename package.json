@@ -13,7 +13,7 @@
         "truffle": "5.1.6"
     },
     "devDependencies": {
-        "@commitlint/cli": "^8.2.0",
+        "@commitlint/cli": "^12.1.0",
         "@commitlint/config-conventional": "^8.2.0",
         "@htmlacademy/editorconfig-cli": "^1.0.0",
         "conventional-changelog-cli": "^2.0.12",
